@@ -3,6 +3,9 @@ import { Container, Grid, Form, Input } from "semantic-ui-react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { Button } from "@/components/ui/button"
+import { TermsCheckBox } from "../checkbox/checkbox";
+
 interface userDetails {
   username: string;
   email: string;
@@ -116,23 +119,16 @@ export default function SignUpPage() {
                   />
                 </Form.Field>
                 <Form.Field style={{ display: "inline-flex" }}>
-                  <input type="checkbox" onClick={handleButtonClick} />
-                  <p>
-                    I agree to the <a>terms and conditions</a>
-                  </p>
+                <TermsCheckBox handleClick={handleButtonClick} />
                 </Form.Field>
-                <button
-                  type="submit"
-                  disabled={!enableButton}
-                  style={{
+                <Button style={{
                     width: "-webkit-fill-available",
                     borderRadius: "20px",
                   }}
-                  className="ui primary button"
-                  //   onClick={() => router.push(route)}
-                >
-                  Create Account
-                </button>
+                  disabled={!enableButton}
+                  >
+                Create Account
+                </Button>
               </Form>
               <Container style={{ margin: "2em 0" }}>
                 <p style={fontStyles.secondaryFont}>
