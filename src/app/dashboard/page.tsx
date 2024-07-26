@@ -10,9 +10,7 @@ export default function DashboardHome() {
   return (
     // <Provider store={store}>
     <>
-      <MainNav className="mx-6" />
       <Dashboard />
-      Welcome to your dashboard
     </>
     // </Provider>
   );
