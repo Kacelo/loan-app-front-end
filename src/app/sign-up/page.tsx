@@ -1,5 +1,6 @@
 "use client";
 
+import { Heading2 } from "@/components/typography/typography";
 import SignUpPage from "../../components/sign-up/sign-up";
 
 // import { Provider } from "react-redux";

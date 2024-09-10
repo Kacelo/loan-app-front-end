@@ -1,52 +1,86 @@
 import { FormEvent, useState } from "react";
-import { Container, Grid, Form, Input } from "semantic-ui-react";
+import { Container, Grid, Input } from "semantic-ui-react";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { TermsCheckBox } from "../checkbox/checkbox";
-
+import "../../envConfigs";
+import { handleRoute } from "@/libs/helper-functions/router";
+import { errorsToast } from "../alertDialog/alert-dialog";
+import { useToast } from "../ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Heading1, Heading2 } from "../typography/typography";
 interface userDetails {
   username: string;
   email: string;
   password: string;
 }
-export default function SignUpPage() {
+const formSchema = z.object({
+  username: z.string().min(2).max(50),
+  password: z.string().min(2).max(50),
+  email: z.string().min(2).max(50),
+  role: z.string().min(2).max(50),
+});
+function SignUpPage() {
   const [enableButton, setEnableButton] = useState(false);
   // const router = useRouter();
   const handleButtonClick = () => {
     setEnableButton(!enableButton);
   };
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const { toast } = useToast();
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+    },
+  });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      event.preventDefault();
-  
-      const formData = new FormData(event.currentTarget);
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
-      const username = formData.get("username") as string;
-  
-      if (!email || !password || !username) {
-        throw new Error("All fields are required.");
-      }
-  
+      const { username, password, email, role } = values;
       const data = {
         username,
         password,
         email,
+        role,
       };
-    
       const response = await axios.post(
-        "http://localhost:3000/api/v1/auth/signup",
+        "http://localhost:4000/api/v1/auth/signup",
         data
       );
-  
+      console.log(response);
+      if (response.status === 201) {
+        console.log("res", response);
+        errorsToast(toast, "Success", "Welcome");
+        handleRoute("/dashboard", router);
+      } else {
+        errorsToast(toast, "Login Error", "Please Try Again");
+      }
     } catch (error) {
-      console.error("Error during submission:", error);
+      console.log("error", error);
     }
+    console.log(values);
   }
-  
-
+ 
   return (
     <Grid stackable columns={2} style={{ height: "100%" }}>
       <Grid.Column width={10} style={{ padding: "0em 5em" }}>
@@ -60,94 +94,124 @@ export default function SignUpPage() {
         </Container> */}
         <Container style={{ textAlign: "center", width: "640px" }}>
           <Container style={{ textAlign: "center", margin: "2em auto" }}>
-            <h1 style={fontStyles}>Join Now</h1>
-            <p style={fontStyles.secondaryFont}>Yup! its Free!</p>
-          </Container>
-          <Container>
-            <Grid.Column width={4}>
-              <Form onSubmit={handleSubmit}>
-                <Form.Field>
-                  {/* {errors.email && touched.email ? (
-                    <div>
-                      <p style={{ color: "#CA0C00", fontSize: "11px" }}>
-                        {errors.email}
-                      </p>
-                    </div>
-                  ) : null} */}
-                  <input
-                    placeholder="Email"
-                    type="email"
-                    name="email"
-                    // value={values.email}
-                    // onChange={handleChange}
-                    // onBlur={handleBlur}
-                  />
-                </Form.Field>
-
-                <Form.Field>
-                  {/* {errors.password && touched.password ? (
-                    <div>
-                      <p style={{ color: "#CA0C00", fontSize: "11px" }}>
-                        {errors.password}
-                      </p>
-                    </div>
-                  ) : null} */}
-                  <input
-                    placeholder="Password"
-                    type="password"
-                    name="password"
-                    // value={values.password}
-                    // onChange={handleChange}
-                    // onBlur={handleBlur}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  {/* {errors.username && touched.username ? (
-                    <div>
-                      <p style={{ color: "#CA0C00", fontSize: "11px" }}>
-                        {errors.username}
-                      </p>
-                    </div>
-                  ) : null} */}
-                  <input
-                    // label="my-linked-tree/"
-                    placeholder="username"
-                    name="username"
-                    // value={values.username}
-                    // onChange={handleChange}
-                    // onBlur={handleBlur}
-                  />
-                </Form.Field>
-                <Form.Field style={{ display: "inline-flex" }}>
-                <TermsCheckBox handleClick={handleButtonClick} />
-                </Form.Field>
-                <Button style={{
-                    width: "-webkit-fill-available",
-                    borderRadius: "20px",
-                  }}
-                  disabled={!enableButton}
+            <Grid.Column width={10}>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="w-2/3 space-y-6"
+                >
+                  <Container
+                    style={{ textAlign: "center", margin: "2em auto" }}
                   >
-                Create Account
-                </Button>
+                    <Heading1 text="Sign Up" />
+                  </Container>
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="username"
+                            {...field}
+                            style={{ width: "-webkit-fill-available" }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="email"
+                            {...field}
+                            style={{ width: "-webkit-fill-available" }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="password"
+                            {...field}
+                            style={{ width: "-webkit-fill-available" }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger id="framework">
+                              <SelectValue placeholder="Select Role" />
+                            </SelectTrigger>
+                          </FormControl>
+
+                          <SelectContent position="popper">
+                            <SelectItem value="Borrower">Borrower</SelectItem>
+                            <SelectItem value="Lender">Lender</SelectItem>
+                          </SelectContent>
+                        </Select>{" "}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <TermsCheckBox handleClick={handleButtonClick} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    style={{
+                      width: "-webkit-fill-available",
+                      // borderRadius: "20px",
+                    }}
+                    disabled={!enableButton}
+                    type="submit"
+                  >
+                    Sign Up
+                  </Button>
+                  <Container style={{ margin: "1em 0" }}>
+                    <p style={fontStyles.secondaryFont}>
+                      Already have an account? <a href="">Log In</a>
+                    </p>
+                  </Container>
+                </form>
               </Form>
-              <Container style={{ margin: "2em 0" }}>
-                <p style={fontStyles.secondaryFont}>
-                  Already have an account? <a href="">Log In</a>
-                </p>
-              </Container>
             </Grid.Column>
           </Container>
         </Container>
       </Grid.Column>
-      {/* <Grid.Column
-        width={6}
-        style={{
-          height: "auto",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundImage: "url(images/signup6.png)",
-        }}
-      ></Grid.Column> */}
     </Grid>
   );
 }
@@ -160,3 +224,5 @@ const fontStyles = {
     color: "rgb(103 107 95)",
   },
 };
+
+export default SignUpPage;
