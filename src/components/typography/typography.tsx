@@ -47,3 +47,8 @@ export function MutedText(props: text) {
 
   return <p className="text-sm text-muted-foreground" style={styles} > {text}</p>;
 }
+export function ParagraphText(props: text) {
+  const { text } = props;
+
+  return <p className="text-sm"> {text}</p>;
+}
