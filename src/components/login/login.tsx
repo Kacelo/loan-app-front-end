@@ -46,9 +46,7 @@ function LoginForm() {
         "http://localhost:4000/api/v1/auth/login",
         data
       );
-      console.log(response)
       if(response.status === 200){
-        console.log('res',response)
         errorsToast(toast, "Success",'Welcome back.')
         handleRoute('/dashboard', router)
       }else{

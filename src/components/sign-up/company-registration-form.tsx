@@ -95,9 +95,7 @@ function CompanyRegistrationForm(props: formProps) {
         "http://localhost:4000/api/v1/company",
         data
       );
-      console.log(response);
       if (response.status === 201) {
-        console.log("res", response);
         errorsToast(toast, "Success", "Welcome");
         // handleRoute("/dashboard", router);
       } else {
@@ -106,7 +104,6 @@ function CompanyRegistrationForm(props: formProps) {
     } catch (error) {
       console.log("error", error);
     }
-    console.log(values);
   }
 
   return (
