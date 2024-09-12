@@ -22,7 +22,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import {
   Command,
   CommandDialog,
@@ -33,7 +33,7 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -42,7 +42,9 @@ import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { regions } from "@/assets/regions";
 interface userDetails {
+  username: string;
   email: string;
+  password: string;
   name: string;
   address: string;
   city: string;
@@ -55,8 +57,13 @@ interface formProps {
   email: string;
 }
 const formSchema = z.object({
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
   name: z.string().min(2).max(50),
+  role: z.string().min(2).max(50),
   address: z.string().min(2).max(50),
+  username: z.string().min(2).max(50),
+  password: z.string().min(2).max(50),
   email: z.string().min(2).max(50),
   city: z.string().min(2).max(50),
   region: z.string().min(2).max(50),
@@ -64,8 +71,8 @@ const formSchema = z.object({
   postalCode: z.string().min(2).max(50),
   registrationNumber: z.string().min(2).max(50),
 });
-function CompanyRegistrationForm(props: formProps) {
-  const {email} = props
+function CompanyRegistrationForm() {
+  // const { email } = props;
   const [enableButton, setEnableButton] = useState(false);
   // const router = useRouter();
   const handleButtonClick = () => {
@@ -76,15 +83,22 @@ function CompanyRegistrationForm(props: formProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: email
+      role:"Lender"
     },
   });
+  console.log("AHHHHHHHHHHHHHHHH");
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Submitting form with values:", values);
     try {
       const {
+        firstName,
+        lastName,
         name,
+        role,
         address,
+        username,
+        password,
         email,
         city,
         region,
@@ -92,7 +106,8 @@ function CompanyRegistrationForm(props: formProps) {
         postalCode,
         registrationNumber,
       } = values;
-      const data = {
+
+      const companyData = {
         name,
         address,
         email,
@@ -102,21 +117,44 @@ function CompanyRegistrationForm(props: formProps) {
         postalCode,
         registrationNumber,
       };
-      
-      const response = await axios.post(
+
+      const companyCreationResponse = await axios.post(
         "http://localhost:4000/api/v1/companies",
-        data
+        companyData
       );
-      if (response.status === 201) {
-        errorsToast(toast, "Success", "Welcome");
-        // handleRoute("/dashboard", router);
+console.log('Company res:',companyCreationResponse)
+      if (companyCreationResponse.status === 201) {
+        errorsToast(toast, "Success", "Company Profile Created");
+        const userData = {
+          firstName,
+          lastName,
+          username,
+          password,
+          email,
+          role,
+          companyId: companyCreationResponse.data.id,
+        }
+       
+
+        const response = await axios.post(
+          "http://localhost:4000/api/v1/auth/signup",
+          userData
+        );
+        console.log(response)
+
+        if (response.status === 201) {
+          errorsToast(toast, "Success", "Welcome");
+          handleRoute("/dashboard", router);
+        } else {
+          errorsToast(toast, "Sign Up Error", "Please Try Again");
+        }
       } else {
-        errorsToast(toast, "Login Error", "Please Try Again");
+        errorsToast(toast, "Sign Up Error", "Please Try Again");
       }
     } catch (error) {
-      console.log("error", error);
+      console.error("Form submission error:", error);
     }
-  }
+  } 
 
   return (
     <Form {...form}>
@@ -125,6 +163,71 @@ function CompanyRegistrationForm(props: formProps) {
           <Heading2 text="Company Registration" />
         </Container>
         <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="First Name"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="First Name"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="username"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="password"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                  type="password"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
@@ -150,7 +253,7 @@ function CompanyRegistrationForm(props: formProps) {
                   placeholder="email"
                   {...field}
                   style={{ width: "-webkit-fill-available" }}
-                
+                  type="email"
                 />
               </FormControl>
               <FormMessage />
@@ -173,12 +276,11 @@ function CompanyRegistrationForm(props: formProps) {
             </FormItem>
           )}
         />
-           <FormField
+    <FormField
           control={form.control}
           name="region"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Language</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -186,14 +288,13 @@ function CompanyRegistrationForm(props: formProps) {
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-[200px] justify-between",
+                        "justify-between",
                         !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value
-                        ? regions.find(
-                            (region) => region.value === field.value
-                          )?.label
+                        ? regions.find((region) => region.value === field.value)
+                            ?.label
                         : "Select Region"}
                       <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -210,7 +311,7 @@ function CompanyRegistrationForm(props: formProps) {
                             value={region.label}
                             key={region.value}
                             onSelect={() => {
-                              form.setValue("region", region.value)
+                              form.setValue("region", region.value);
                             }}
                           >
                             <CheckIcon
@@ -229,13 +330,11 @@ function CompanyRegistrationForm(props: formProps) {
                   </Command>
                 </PopoverContent>
               </Popover>
-              <FormDescription>
-                This is the language that will be used in the dashboard.
-              </FormDescription>
+
               <FormMessage />
             </FormItem>
           )}
-          />
+        />
 
         <FormField
           control={form.control}
@@ -285,7 +384,7 @@ function CompanyRegistrationForm(props: formProps) {
             </FormItem>
           )}
         />
-        <FormField
+       <FormField
           control={form.control}
           name="address"
           render={({ field }) => (
@@ -301,7 +400,23 @@ function CompanyRegistrationForm(props: formProps) {
             </FormItem>
           )}
         />
-
+ <FormField
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder=""
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                  disabled
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button
           style={{
             width: "-webkit-fill-available",
@@ -310,7 +425,7 @@ function CompanyRegistrationForm(props: formProps) {
           // disabled={!enableButton}
           type="submit"
         >
-          Register Company
+          Sign Up
         </Button>
       </form>
     </Form>
