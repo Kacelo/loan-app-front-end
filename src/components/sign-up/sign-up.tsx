@@ -65,6 +65,8 @@ interface userDetails {
   password: string;
 }
 const formSchema = z.object({
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
   username: z.string().min(2).max(50),
   password: z.string().min(2).max(50),
   email: z.string().min(2).max(50),
@@ -94,19 +96,17 @@ function SignUpPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      role:"Borrower"
     },
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const { username, password, email, role } = values;
-      const companyData = { email };
-      const companyResponse = await axios.post(
-        "http://localhost:4000/api/v1/companies/find",
-        companyData
-      );
+      const { username, password, email, role,   firstName,
+        lastName, } = values;      
 
-      if (companyResponse.status == 201) {
         const data = {
+          firstName,
+          lastName,
           username,
           password,
           email,
@@ -125,9 +125,8 @@ function SignUpPage() {
         } else {
           errorsToast(toast, "Login Error", "Please Try Again");
         }
-      } else {
       }
-    } catch (error) {
+     catch (error) {
       console.log("error", error);
       errorsToast(toast, "Error", `${error}`);
     }
@@ -135,181 +134,170 @@ function SignUpPage() {
   }
   console.log(userRole);
   return (
-    <Grid stackable columns={2} style={{ height: "100%" }}>
-      {/* <Grid.Column
-        width={6}
-        style={{ padding: "0em 5em", textAlign: "center" }}
-      >
-        {" "}
-        <Container style={{ textAlign: "center", width: "640px" }}>
-          <Container style={{ textAlign: "center", margin: "2em auto" }}>
-            <Grid.Column width={10}>
-              {userRole == "Lender" ? <CompanyRegistrationForm /> : ""}
-            </Grid.Column>
-          </Container>
-        </Container>
-      </Grid.Column> */}
-      <Grid.Column
-        width={6}
-        style={{ padding: "0em 5em", textAlign: "center" }}
-      >
-        {/* <Container style={{ textAlign: "start", margin: "0em auto" }}>
-          <Image
-            src="/images/light.png"
-            width={150}
-            height={150}
-            alt="image with cards"
-          ></Image>
-        </Container> */}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-3/3 space-y-5">
         <Container style={{ textAlign: "center", margin: "2em auto" }}>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-2/3 space-y-6 m-auto"
-            >
-              <Container style={{ textAlign: "center", margin: "2em auto" }}>
-                <Heading1 text="Sign Up" />
-              </Container>
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="username"
-                        {...field}
-                        style={{ width: "-webkit-fill-available" }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="email"
-                        {...field}
-                        style={{ width: "-webkit-fill-available" }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="password"
-                        {...field}
-                        style={{ width: "-webkit-fill-available" }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(value); // Call the onChange function with the new value
-                        handleUserRoleClick(value); // Call your custom function with the new value
-                      }}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger id="framework">
-                          <SelectValue placeholder="Select Role" />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent position="popper">
-                        <SelectItem value="Borrower">Borrower</SelectItem>
-                        <SelectItem value="Lender">Lender</SelectItem>
-                      </SelectContent>
-                    </Select>{" "}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {userRole == "Lender" ? (
-                <div>
-                  <p>
-                    Before creating your lender profile, you should register a
-                    company first.
-                  </p>
-
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline">Continue</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                    <DialogTitle></DialogTitle>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-1 items-center gap-4">
-                          <CompanyRegistrationForm email={form.getValues().email} />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                        <Button type="button">Continue</Button>
-                        </DialogClose>
-                        {/*  */}
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              ) : (
-                ""
-              )}
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <TermsCheckBox handleClick={handleButtonClick} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                style={{
-                  width: "-webkit-fill-available",
-                  // borderRadius: "20px",
-                }}
-                disabled={!enableButton}
-                type="submit"
-              >
-                Sign Up
-              </Button>
-              <Container style={{ margin: "1em 0" }}>
-                <p style={fontStyles.secondaryFont}>
-                  Already have an account? <a href="/sign-in">Log In</a>
-                </p>
-              </Container>
-            </form>
-          </Form>
+          <Heading2 text="Sign Up" />
         </Container>
-      </Grid.Column>
-    </Grid>
+        <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="First Name"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="First Name"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="username"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="password"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                  type="password"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="email"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                  type="email"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* <FormField
+          control={form.control}
+          name="phoneNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="Phone Number"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+        {/* <FormField
+          control={form.control}
+          name="postalCode"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="Postal Code"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+       {/* <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="Address"
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+ <FormField
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder=""
+                  {...field}
+                  style={{ width: "-webkit-fill-available" }}
+                  disabled
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          style={{
+            width: "-webkit-fill-available",
+            // borderRadius: "20px",
+          }}
+          // disabled={!enableButton}
+          type="submit"
+        >
+          Sign Up
+        </Button>
+      </form>
+    </Form>
   );
 }
 const fontStyles = {
