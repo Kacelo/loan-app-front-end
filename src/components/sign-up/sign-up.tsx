@@ -101,7 +101,7 @@ function SignUpPage() {
       const { username, password, email, role } = values;
       const companyData = { email };
       const companyResponse = await axios.post(
-        "http://localhost:4000/api/v1/company/find",
+        "http://localhost:4000/api/v1/companies/find",
         companyData
       );
 

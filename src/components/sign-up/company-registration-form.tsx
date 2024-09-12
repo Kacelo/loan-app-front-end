@@ -10,13 +10,6 @@ import { handleRoute } from "@/libs/helper-functions/router";
 import { errorsToast } from "../alertDialog/alert-dialog";
 import { useToast } from "../ui/use-toast";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -25,10 +18,29 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command"
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Heading1, Heading2 } from "../typography/typography";
+import { cn } from "@/lib/utils";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { regions } from "@/assets/regions";
 interface userDetails {
   email: string;
   name: string;
@@ -92,7 +104,7 @@ function CompanyRegistrationForm(props: formProps) {
       };
       
       const response = await axios.post(
-        "http://localhost:4000/api/v1/company",
+        "http://localhost:4000/api/v1/companies",
         data
       );
       if (response.status === 201) {
@@ -161,22 +173,69 @@ function CompanyRegistrationForm(props: formProps) {
             </FormItem>
           )}
         />
-        <FormField
+           <FormField
           control={form.control}
           name="region"
           render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  placeholder="Region"
-                  {...field}
-                  style={{ width: "-webkit-fill-available" }}
-                />
-              </FormControl>
+            <FormItem className="flex flex-col">
+              <FormLabel>Language</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? regions.find(
+                            (region) => region.value === field.value
+                          )?.label
+                        : "Select Region"}
+                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search language..." />
+                    <CommandList>
+                      <CommandEmpty>No language found.</CommandEmpty>
+                      <CommandGroup>
+                        {regions.map((region) => (
+                          <CommandItem
+                            value={region.label}
+                            key={region.value}
+                            onSelect={() => {
+                              form.setValue("region", region.value)
+                            }}
+                          >
+                            <CheckIcon
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                region.value === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {region.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                This is the language that will be used in the dashboard.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
-        />
+          />
 
         <FormField
           control={form.control}
