@@ -1,21 +1,14 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Container, Grid, Input } from "semantic-ui-react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { TermsCheckBox } from "../checkbox/checkbox";
-import "../../envConfigs";
+// import { TermsCheckBox } from "../checkbox/checkbox";
+// import "../../envConfigs";
 import { handleRoute } from "@/libs/helper-functions/router";
-import { errorsToast } from "../alertDialog/alert-dialog";
-import { useToast } from "../ui/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { errorsToast } from "../../alertDialog/alert-dialog";
+import { useToast } from "../../ui/use-toast";
 import {
   Form,
   FormControl,
@@ -25,40 +18,29 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  Heading1,
-  Heading2,
-  Heading3,
-  ParagraphText,
-  TypographyLarge,
-} from "../typography/typography";
-import CompanyRegistrationForm from "./company-registration-form";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Label } from "@/components/ui/label";
-
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Heading1, Heading2, Heading3 } from "../../typography/typography";
+import { cn } from "@/lib/utils";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { regions } from "@/assets/regions";
 import {
   Card,
   CardContent,
@@ -67,78 +49,99 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { lenderRegistrationSchema } from "../schemas/schemas";
 interface userDetails {
   username: string;
   email: string;
   password: string;
+  name: string;
+  address: string;
+  city: string;
+  region: string;
+  registrationNumber: string;
+  phoneNumber: string;
+  postalCode: string;
+}
+interface formProps {
+  email: string;
+  response: AxiosResponse<any, any>
 }
 const formSchema = z.object({
   firstName: z.string().min(2).max(50),
   lastName: z.string().min(2).max(50),
+  name: z.string().min(2).max(50),
+  role: z.string().min(2).max(50),
+  address: z.string().min(2).max(50),
   username: z.string().min(2).max(50),
   password: z.string().min(2).max(50),
   email: z.string().min(2).max(50),
-  role: z.string().min(2).max(50),
+  city: z.string().min(2).max(50),
+  region: z.string().min(2).max(50),
+  phoneNumber: z.string().min(2).max(50),
+  postalCode: z.string().min(2).max(50),
+  registrationNumber: z.string().min(2).max(50),
 });
-function SignUpPage() {
+function LenderRegistrationForm(props: formProps) {
+    const {email, response} = props
+  // const { email } = props;
   const [enableButton, setEnableButton] = useState(false);
-  const [userRole, setUserRole] = useState("");
-
-  // useEffect(() => {
-  //   handleUserRoleClick()
-
-  //   return () => {
-  //   }
-  // }, [third])
-
   // const router = useRouter();
   const handleButtonClick = () => {
     setEnableButton(!enableButton);
   };
-  const handleUserRoleClick = (value: string) => {
-    setUserRole(value);
-  };
   const { toast } = useToast();
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof lenderRegistrationSchema>>({
+    resolver: zodResolver(lenderRegistrationSchema),
     defaultValues: {
-      username: "",
-      role: "Borrower",
+      role: "Lender",
     },
   });
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof lenderRegistrationSchema>) {
+    console.log("Submitting form with values:", values);
     try {
-      const { username, password, email, role, firstName, lastName } = values;
-
-      const data = {
+      const {
         firstName,
         lastName,
+        role,
         username,
         password,
         email,
-        role,
-      };
+      } = values;
 
-      const response = await axios.post(
-        "http://localhost:4000/api/v1/auth/signup",
-        data
-      );
-      console.log(response);
+      console.log("Company res:", response);
       if (response.status === 201) {
-        console.log("res", response);
-        errorsToast(toast, "Success", "Welcome");
-        // handleRoute("/dashboard", router);
+        errorsToast(toast, "Success", "Company Profile Created");
+        const userData = {
+          firstName,
+          lastName,
+          username,
+          password,
+          email,
+          role,
+          companyId: response.data.id,
+        };
+
+        const res = await axios.post(
+          "http://localhost:4000/api/v1/auth/signup",
+          userData
+        );
+        console.log(res);
+
+        if (res.status === 201) {
+          errorsToast(toast, "Success", "Welcome");
+          handleRoute("/dashboard", router);
+        } else {
+          errorsToast(toast, "Sign Up Error", "Please Try Again");
+        }
       } else {
-        errorsToast(toast, "Login Error", "Please Try Again");
+        errorsToast(toast, "Sign Up Error", "Please Try Again");
       }
     } catch (error) {
-      console.log("error", error);
-      errorsToast(toast, "Error", `${error}`);
+      console.error("Form submission error:", error);
     }
-    console.log(values);
   }
-  console.log(userRole);
+
   return (
     <Card>
       <Form {...form}>
@@ -149,11 +152,13 @@ function SignUpPage() {
           <CardHeader>
             <CardTitle>
               {" "}
-             Sign Up
+              <Container style={{ textAlign: "center", margin: "2em auto" }}>
+                <Heading3 text="Lets Get To Know You" />
+              </Container>
             </CardTitle>
-            <CardDescription>
-              Enter your details here. Click sign up when you're done.
-            </CardDescription>
+            {/* <CardDescription>
+              Make changes to your account here. Click save when you're done.
+            </CardDescription> */}
           </CardHeader>
           <CardContent className="space-y-2">
             <FormField
@@ -238,7 +243,6 @@ function SignUpPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="role"
@@ -282,4 +286,4 @@ const fontStyles = {
   },
 };
 
-export default SignUpPage;
+export default LenderRegistrationForm;
