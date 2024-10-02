@@ -161,8 +161,10 @@ function LoanApplicationForm() {
           <CardHeader>
             <CardTitle>
               {" "}
-              <Container style={{ textAlign: "center", margin: "2em auto" }}>
-                <Heading3 text="Lets Get To Know You" />
+              <Container style={{ textAlign: "center", margin: "" }}>
+                {/* <Heading3 text="" /> */}
+
+                Loan Application Form
               </Container>
             </CardTitle>
             {/* <CardDescription>
@@ -288,7 +290,7 @@ function LoanApplicationForm() {
               // disabled={!enableButton}
               type="submit"
             >
-              Sign Up
+              Apply Now
             </Button>
           </CardContent>
         </form>

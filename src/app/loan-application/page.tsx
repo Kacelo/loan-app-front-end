@@ -2,6 +2,7 @@
 
 import { ButtonLink } from "@/components/buttons/buttons";
 import LoanApplicationForm from "@/components/loans/forms/loan-form";
+import { LoanApplicationComponent } from "@/components/loans/loan-application";
 import LoginForm from "@/components/login/login";
 import {
   Heading1,
@@ -16,8 +17,7 @@ export default function SignUp() {
     <Container>
       <Container style={{marginTop: '2em'}}>
         {/* <LoginForm /> */}
-        Hello lets get you started
-        <LoanApplicationForm />
+        <LoanApplicationComponent />
       </Container>
     </Container>
     // </div>
