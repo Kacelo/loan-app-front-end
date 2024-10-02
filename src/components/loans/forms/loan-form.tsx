@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { Container, Grid, Input } from "semantic-ui-react";
 import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
@@ -49,9 +49,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider"
+import { Slider } from "@/components/ui/slider";
 
 import { DatePickerDemo } from "@/components/buttons/date-picker/date-picker";
+import { Label } from "@/components/ui/label";
+import { LoanAmountSlider } from "@/components/loan-slider/loan-slider";
 // import { lenderRegistrationSchema } from "../schemas/schemas";
 interface userDetails {
   username: string;
@@ -72,42 +74,70 @@ interface formProps {
   //   response: AxiosResponse<any, any>
 }
 const formSchema = z.object({
-  amount: z.number().min(1), // Loan amount should be a number
-  borrowerId: z.string().min(2).max(50),
-  lenderId: z.string().min(2).max(50),
-  interestRate: z.number().min(0), // Interest rate as a float number
-  startDate: z.date(), // Date for the loan start
+  amount: z.number().array(), // Loan amount should be a number
+  // borrowerId: z.string().min(2).max(50),
+  // lenderId: z.string().min(2).max(50),
+  // interestRate: z.number().min(0), // Interest rate as a float number
+  // startDate: z.date(), // Date for the loan start
   endDate: z.date(), // Date for the loan end
-  status: z.string().min(2).max(20), // Loan status like 'pending', 'approved'
-  comments: z.string().max(500), // Optional comments
-  totalRepayment: z.number().min(1), // New field for total repayment
+  // status: z.string().min(2).max(20), // Loan status like 'pending', 'approved'
+  // comments: z.string().max(500), // Optional comments
+  // totalRepayment: z.number().min(1), // New field for total repayment
 });
 
 function LoanApplicationForm() {
-//   const { customerID, lenderID } = props;
+  //   const { customerID, lenderID } = props;
   // const { email } = props;
   const [enableButton, setEnableButton] = useState(false);
   const [date, setDate] = React.useState<Date>();
+  const [loanAmount, setLoanAmount] = useState<number>();
+  const [totalMoney, setTotalMoney] = useState<number>(0);
   // const router = useRouter();
   const handleButtonClick = () => {
     setEnableButton(!enableButton);
   };
+  useEffect(() => {
+    calculateTotalRepayment(loanAmount);
+
+    return () => {};
+  }, [loanAmount]);
+
+  const calculateTotalRepayment = (amount: number | undefined) => {
+    if (amount) {
+      const repaymentAmount = (amount * 30) / 100;
+      setTotalMoney(repaymentAmount + amount);
+    }
+  };
+  console.log("total amount:", totalMoney);
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      status: "pending approval",
-      lenderId: "lenderID",
-      borrowerId: "customerID",
-    },
+    defaultValues: {},
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("Submitting form with values:", values);
+    const { amount, endDate } = values;
+    // Convert to a valid Date object
+    const dateObject = new Date(endDate).toISOString();
+    const startDateObj = new Date().toISOString()
+    const applicationData = {
+      amount: `${amount[0]}`,
+      borrowerId: "66e2fc20a71e18b5f9f7c692",
+      lenderId: "66fba53a40613bbcfb982dc1",
+      interestRate: "15",
+      startDate: startDateObj,
+      endDate: dateObject,
+      status: "Pending",
+      comments: "",
+      totalRepayment: totalMoney,
+      deleted: false
+    };
+    console.log('formatted maybe?',startDateObj, dateObject);
     try {
       const res = await axios.post(
-        "http://localhost:4000/api/v1/auth/signup",
-        values
+        "http://localhost:4000/api/v1/loans/create",
+        applicationData
       );
       console.log(res);
 
@@ -121,8 +151,6 @@ function LoanApplicationForm() {
       console.error("Form submission error:", error);
     }
   }
-  console.log('Date1:',date)
-
   return (
     <Card>
       <Form {...form}>
@@ -148,12 +176,12 @@ function LoanApplicationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                  <Slider
-      defaultValue={[50]}
-      max={5000}
-      step={100}
-      className={cn("w-[60%]")}
-    />
+                    <LoanAmountSlider
+                      maximumAmount={4000}
+                      defaultValue={[0]}
+                      setLoanAmount={setLoanAmount}
+                      field={field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,13 +193,13 @@ function LoanApplicationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <DatePickerDemo setDateFunction={setDate} />
+                    <DatePickerDemo field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="totalRepayment"
               render={({ field }) => (
@@ -186,24 +214,38 @@ function LoanApplicationForm() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            {/* <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder="password"
-                      {...field}
-                      style={{ width: "-webkit-fill-available" }}
-                      type="password"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
             /> */}
+
+            <FormItem>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="maxlength">Loan Amount</Label>
+                <span className="w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm text-muted-foreground hover:border-border">
+                  N${loanAmount}
+                </span>
+              </div>
+              <FormMessage />
+            </FormItem>
+
+            <FormItem>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="maxlength">Interest</Label>
+                <span className="w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm text-muted-foreground hover:border-border">
+                  {30}%
+                </span>
+              </div>
+              <FormMessage />
+            </FormItem>
+
+            <FormItem>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="maxlength">Total Repayment</Label>
+                <span className="w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm text-muted-foreground hover:border-border">
+                  N${totalMoney}
+                </span>
+              </div>
+              <FormMessage />
+            </FormItem>
+
             {/* <FormField
               control={form.control}
               name="email"

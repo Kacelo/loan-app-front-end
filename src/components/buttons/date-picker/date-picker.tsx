@@ -12,17 +12,25 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { ControllerRenderProps } from "react-hook-form"
 interface datePickerProps{
-    setDateFunction: React.Dispatch<React.SetStateAction<Date | undefined>>
+    // setDateFunction: React.Dispatch<React.SetStateAction<Date | undefined>>
+    field : ControllerRenderProps<{
+      amount: number[];
+     
+      endDate: Date;
+      // comments: string;
+      // totalRepayment: number;
+  }, "endDate">
 }
 export function DatePickerDemo(props: datePickerProps) {
-    const {setDateFunction} = props
-  const [date, setDate] = React.useState<Date>()
-  const handleDate = (date: React.SetStateAction<Date | undefined>)=>{
-    setDate(date)
-    setDateFunction(date)
-  }
-console.log('Date:',date)
+    const {field} = props
+  // const [date, setDate] = React.useState<Date>()
+  // const handleDate = (date: React.SetStateAction<Date | undefined>)=>{
+  //   setDate(date)
+  //   setDateFunction(date)
+  // }
+console.log('Date:',field.value)
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -30,18 +38,18 @@ console.log('Date:',date)
           variant={"outline"}
           className={cn(
             "w-[280px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            !field.value && "text-muted-foreground"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={date}
-          onSelect={handleDate}
+          selected={field.value}
+          onSelect={field.onChange}
           initialFocus
         />
       </PopoverContent>
