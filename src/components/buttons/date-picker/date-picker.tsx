@@ -30,7 +30,6 @@ export function DatePickerDemo(props: datePickerProps) {
   //   setDate(date)
   //   setDateFunction(date)
   // }
-console.log('Date:',field.value)
   return (
     <Popover>
       <PopoverTrigger asChild>

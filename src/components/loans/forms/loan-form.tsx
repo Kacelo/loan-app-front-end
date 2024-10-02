@@ -108,7 +108,6 @@ function LoanApplicationForm() {
       setTotalMoney(repaymentAmount + amount);
     }
   };
-  console.log("total amount:", totalMoney);
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
