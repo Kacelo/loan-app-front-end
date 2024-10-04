@@ -1,6 +1,7 @@
 
-const NAVBAR = ()=>{
+const Navbar = ()=>{
     return(
         <></>
     )
 }
+export default Navbar
