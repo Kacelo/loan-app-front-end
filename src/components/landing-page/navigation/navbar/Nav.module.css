@@ -1,0 +1,104 @@
+.navbar {
+    background-color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .navContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .navMenu {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .navLink {
+    color: #333;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+  
+  .ctaButton {
+    background-color: #f03;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+  .ctaPrimary {
+    background-color: #0d0c22;
+    color:white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+  .ctaSecondary{
+    background-color: #f4f5fb;
+    color: black;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+  .ctaPrimaryMobile {
+    background-color: #0d0c22;
+    color:white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 0 1rem
+
+  }
+  .ctaSecondaryMobile{
+    background-color: #f4f5fb;
+    color: black;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 0 1rem 0 0
+  }
+  
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  
+  .bar {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 3px 0;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .navMenu {
+      display: none;
+    }
+  
+    .navMenu.active {
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .hamburger {
+      display: flex;
+    }
+  }
+  
