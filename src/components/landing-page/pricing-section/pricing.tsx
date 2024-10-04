@@ -1,0 +1,3 @@
+const PricingSection = () => {
+  return <></>;
+};
