@@ -1,8 +1,10 @@
+
 import type { Metadata } from "next";
 import "semantic-ui-css/semantic.min.css";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import Nav from "@/components/landing-page/navigation/navbar/navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+      <Nav />
+
         {children}
         <Toaster />
       </body>
