@@ -8,7 +8,7 @@ imageUrl: string
 const Hero = () => {
     return (
       <section className={styles.heroContent}>
-        <div className={styles.heroContent}>
+        <div className={''}>
           {/* Headline */}
           <h1 className={styles.heroTitle}>Manage Loans with Ease and Confidence</h1>
           
@@ -19,7 +19,7 @@ const Hero = () => {
           
           {/* Call to Action */}
           <div className={styles.heroCta}>
-            <a href="/signup">
+            <a href="/sign-up">
               <button className={styles.ctaPrimary}>Get Started</button>
             </a>
             <a href="/learn-more" className={styles.ctaSecondary}>Learn More</a>

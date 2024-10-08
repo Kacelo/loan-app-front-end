@@ -10,7 +10,10 @@
   
   /* Hero Content: Text Alignment */
   .heroContent {
-    max-width: 50%;
+    max-width: 80%;
+    align-items: center;
+    gap: 20px;
+
   }
   
   .heroTitle {
