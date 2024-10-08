@@ -12,7 +12,7 @@ const Nav = () => {
   };
 console.log('is open?', isOpen)
   return (
-    <div className={''}>
+    <div className={styles.navbarContainer}>
          <nav className={styles.navbar}>
       <div className={styles.navContainer}>
         {/* Logo */}
@@ -36,10 +36,10 @@ console.log('is open?', isOpen)
           </Link>
           {isOpen && (
              <div className={` ${styles.ctaNavMenuActive} ${isOpen ? styles.active : ""}`}>
-             <Link href="/login" className={styles.ctaSecondaryMobile}>
+             <Link href="/sign-in" className={styles.ctaSecondaryMobile}>
                Log in
              </Link>
-             <Link href="/signup" className={styles.ctaPrimaryMobile}>
+             <Link href="/sign-up" className={styles.ctaPrimaryMobile}>
                Sign Up
              </Link>
            </div>
@@ -48,12 +48,13 @@ console.log('is open?', isOpen)
 
         {/* CTA */}
         <div className={`${styles.navMenu} `}>
-          <Link href="/login" className={styles.ctaSecondary}>
-            Log in
-          </Link>
-          <Link href="/signup" className={styles.ctaPrimary}>
+        <Link href="/sign-up" className={styles.ctaPrimary}>
             Sign Up
           </Link>
+          <Link href="/sign-in" className={styles.ctaSecondary}>
+            Log in
+          </Link>
+          
         </div>
         {/* <Link href="/apply" className={styles.ctaButton}>
           Apply Now

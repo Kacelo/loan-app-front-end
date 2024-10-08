@@ -13,10 +13,7 @@ export const benefitsData = [
         title: "Automated Loan Processing",
         description: "Speed up the loan approval process with automated verification and approval tools, reducing manual effort and time."
     },
-    {
-        title: "Flexible Repayment Schedules",
-        description: "Offer flexible repayment schedules that adapt to different loan terms and client preferences."
-    },
+  
     {
         title: "Real-Time Loan Status Tracking",
         description: "Keep track of loan application progress and payment status in real time, ensuring transparency for both lenders and borrowers."
@@ -30,7 +27,7 @@ export const benefitsData = [
         description: "Send automated reminders and updates to clients about upcoming payments, deadlines, or new offers."
     },
     {
-        title: "Comprehensive Reporting Tools",
+        title: "Analytics",
         description: "Generate detailed reports on loan performance, repayment trends, and client activity for better decision-making."
     }
 ] as unknown as BenefitsInterface[];

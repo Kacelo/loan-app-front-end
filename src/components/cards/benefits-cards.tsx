@@ -20,13 +20,13 @@ import {
 } from "@/components/ui/select";
 import { Container, Grid } from "semantic-ui-react";
 import { BenefitsInterface } from "@/assets/interfaces";
-
+import styles from './Cards.module.css'
 interface BenefitsArrayInterface {
   benefits: BenefitsInterface[];
 }
 export function BenefitsCard({ title, description }: BenefitsInterface) {
   return (
-    <Card className="w-[350px]">
+    <Card className={styles.card}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -39,14 +39,19 @@ export function BenefitsCard({ title, description }: BenefitsInterface) {
 
 function BenefitSection(props: BenefitsArrayInterface) {
   const { benefits } = props;
-  console.log("Benefits:", benefits);
   return (
     <>
       <Container>
         <Grid>
           <Grid.Row>
-            {benefits.map((benefit) => (
+            <Container>
+              <h1 className={styles.featureHeading}>Features</h1>
+            </Container>
+          </Grid.Row>
+          <Grid.Row>
+            {benefits.map((benefit, key) => (
               <BenefitsCard
+                key={key}
                 title={benefit.title}
                 description={benefit.description}
               />

@@ -12,6 +12,9 @@
     margin: auto;
     border-radius: 40px;
   }
+.navbarContainer {
+  margin: 1em 0;
+}
   
   .navContainer {
     display: flex;
@@ -131,6 +134,9 @@
       border-radius: 5px;
       text-decoration: none;
       margin: 0 0rem 0 0
+    }
+    .navbarContainer {
+      margin: 0;
     }
   }
   
