@@ -7,7 +7,10 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 10;
+    width: max-content;
+    margin: auto;
+    border-radius: 40px;
   }
   
   .navContainer {
@@ -21,11 +24,13 @@
     font-size: 1.5rem;
     font-weight: bold;
     color: #333;
+    margin-right: 2em;
   }
   
   .navMenu {
     display: flex;
     gap: 1.5rem;
+    padding: 0 1em;
   }
   
   .navLink {
@@ -85,6 +90,7 @@
     background-color: #333;
     margin: 3px 0;
   }
+
   
   /* Responsive */
   @media (max-width: 768px) {
@@ -99,6 +105,32 @@
   
     .hamburger {
       display: flex;
+    }
+    .navbar{
+  width:auto;
+  border-radius: 0;
+    }
+    .ctaNavMenuActive{
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .ctaPrimaryMobile {
+      background-color: #0d0c22;
+      color:white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+      margin: 1em 0rem 0 0
+  
+    }
+    .ctaSecondaryMobile{
+      background-color: #f4f5fb;
+      color: black;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+      margin: 0 0rem 0 0
     }
   }
   
