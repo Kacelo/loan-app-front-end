@@ -18,9 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Container, Grid } from "semantic-ui-react";
+import { Container, Grid, GridColumn } from "semantic-ui-react";
 import { BenefitsInterface } from "@/assets/interfaces";
-import styles from './Cards.module.css'
+import styles from "./Cards.module.css";
 interface BenefitsArrayInterface {
   benefits: BenefitsInterface[];
 }
@@ -40,26 +40,26 @@ export function BenefitsCard({ title, description }: BenefitsInterface) {
 function BenefitSection(props: BenefitsArrayInterface) {
   const { benefits } = props;
   return (
-    <>
-      <Container>
-        <Grid>
-          <Grid.Row>
-            <Container>
-              <h1 className={styles.featureHeading}>Features</h1>
-            </Container>
-          </Grid.Row>
-          <Grid.Row>
-            {benefits.map((benefit, key) => (
+    <section className={styles.benefitsContent}>
+      <Grid columns='equal' stackable>
+        <Grid.Row></Grid.Row>
+
+        <Grid.Row columns={3}>
+          <Container>
+            <h1 className={styles.featureHeading}>Features</h1>
+          </Container>
+          {benefits.map((benefit, key) => (
+            <GridColumn>
               <BenefitsCard
                 key={key}
                 title={benefit.title}
                 description={benefit.description}
               />
-            ))}
-          </Grid.Row>
-        </Grid>
-      </Container>
-    </>
+            </GridColumn>
+          ))}
+        </Grid.Row>
+      </Grid>
+    </section>
   );
 }
 
