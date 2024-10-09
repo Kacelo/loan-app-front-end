@@ -54,6 +54,7 @@ import { Slider } from "@/components/ui/slider";
 import { DatePickerDemo } from "@/components/buttons/date-picker/date-picker";
 import { Label } from "@/components/ui/label";
 import { LoanAmountSlider } from "@/components/loan-slider/loan-slider";
+import styles from "../forms/";
 // import { lenderRegistrationSchema } from "../schemas/schemas";
 interface userDetails {
   username: string;
@@ -119,7 +120,7 @@ function LoanApplicationForm() {
     const { amount, endDate } = values;
     // Convert to a valid Date object
     const dateObject = new Date(endDate).toISOString();
-    const startDateObj = new Date().toISOString()
+    const startDateObj = new Date().toISOString();
     const applicationData = {
       amount: `${amount[0]}`,
       borrowerId: "66e2fc20a71e18b5f9f7c692",
@@ -130,9 +131,9 @@ function LoanApplicationForm() {
       status: "Pending",
       comments: "",
       totalRepayment: totalMoney,
-      deleted: false
+      deleted: false,
     };
-    console.log('formatted maybe?',startDateObj, dateObject);
+    console.log("formatted maybe?", startDateObj, dateObject);
     try {
       const res = await axios.post(
         "http://localhost:4000/api/v1/loans/create",
@@ -162,7 +163,6 @@ function LoanApplicationForm() {
               {" "}
               <Container style={{ textAlign: "center", margin: "" }}>
                 {/* <Heading3 text="" /> */}
-
                 Loan Application Form
               </Container>
             </CardTitle>
@@ -192,8 +192,8 @@ function LoanApplicationForm() {
               control={form.control}
               name="endDate"
               render={({ field }) => (
-                <FormItem>
-                  <FormControl>
+                <FormItem style={{ textAlign: "start" }}>
+                  <FormControl >
                     <DatePickerDemo field={field} />
                   </FormControl>
                   <FormMessage />
